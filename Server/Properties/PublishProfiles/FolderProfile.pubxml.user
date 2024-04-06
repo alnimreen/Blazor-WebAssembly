@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+https://go.microsoft.com/fwlink/?LinkID=208121.
+-->
+<Project>
+  <PropertyGroup>
+    <_PublishTargetUrl>D:\webAPI\CLI\ContactProject\ContactProject\Server\bin\Release\net5.0\publish\</_PublishTargetUrl>
+    <History>True|2024-04-06T21:37:09.4027610Z;True|2024-04-07T00:15:40.1301341+03:00;True|2024-04-06T23:15:22.8485488+03:00;</History>
+    <LastFailureDetails />
+  </PropertyGroup>
+</Project>
