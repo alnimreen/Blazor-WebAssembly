@@ -1,0 +1,3 @@
+D:\webAPI\CLI\ContactProject\ContactProject\Shared\bin\Release\net5.0\publish\ContactProject.Shared.dll
+D:\webAPI\CLI\ContactProject\ContactProject\Shared\bin\Release\net5.0\publish\ContactProject.Shared.deps.json
+D:\webAPI\CLI\ContactProject\ContactProject\Shared\bin\Release\net5.0\publish\ContactProject.Shared.pdb

@@ -1,0 +1,11 @@
+D:\webAPI\CLI\ContactProject\ContactProject\Shared\bin\Release\net5.0\ContactProject.Shared.deps.json
+D:\webAPI\CLI\ContactProject\ContactProject\Shared\bin\Release\net5.0\ContactProject.Shared.dll
+D:\webAPI\CLI\ContactProject\ContactProject\Shared\bin\Release\net5.0\ContactProject.Shared.pdb
+D:\webAPI\CLI\ContactProject\ContactProject\Shared\obj\Release\net5.0\ContactProject.Shared.GeneratedMSBuildEditorConfig.editorconfig
+D:\webAPI\CLI\ContactProject\ContactProject\Shared\obj\Release\net5.0\ContactProject.Shared.AssemblyInfoInputs.cache
+D:\webAPI\CLI\ContactProject\ContactProject\Shared\obj\Release\net5.0\ContactProject.Shared.AssemblyInfo.cs
+D:\webAPI\CLI\ContactProject\ContactProject\Shared\obj\Release\net5.0\ContactProject.Shared.csproj.CoreCompileInputs.cache
+D:\webAPI\CLI\ContactProject\ContactProject\Shared\obj\Release\net5.0\ContactProject.Shared.dll
+D:\webAPI\CLI\ContactProject\ContactProject\Shared\obj\Release\net5.0\refint\ContactProject.Shared.dll
+D:\webAPI\CLI\ContactProject\ContactProject\Shared\obj\Release\net5.0\ContactProject.Shared.pdb
+D:\webAPI\CLI\ContactProject\ContactProject\Shared\obj\Release\net5.0\ref\ContactProject.Shared.dll
