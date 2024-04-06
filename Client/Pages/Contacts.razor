@@ -1,0 +1,320 @@
+﻿@page "/contact"
+@using System.Linq
+@using ContactProject.Shared.Models
+@using ContactProject.Shared.Services
+@inject IJSRuntime JSRuntime
+
+<style>
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+    }
+
+    th, td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+    }
+
+    th {
+        background-color: #f2f2f2;
+        font-weight: bold;
+    }
+
+    .edit-delete-buttons button {
+        margin-right: 5px;
+    }
+
+        .edit-delete-buttons button:last-child {
+            margin-right: 0;
+        }
+
+        .edit-delete-buttons button:hover {
+            cursor: pointer;
+            background-color: #ddd;
+        }
+
+    .add-contact-button {
+        margin-bottom: 20px;
+    }
+
+    .add-contact-form {
+        margin-bottom: 20px;
+    }
+
+        .add-contact-form label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .add-contact-form input[type="text"] {
+            width: 100%;
+            padding: 5px;
+            margin-bottom: 10px;
+        }
+
+    .error-message {
+        color: red;
+    }
+
+    .contact-details {
+        margin-top: 20px;
+        background-color: #f2f2f2;
+        padding: 10px;
+    }
+
+    .close-button {
+        margin-top: 10px;
+    }
+</style>
+
+<h3>Contact List</h3>
+
+@if (showContactForm)
+{
+    @if (selectedContact != null)
+    {
+        <h4>Edit Contact</h4>
+        <div class="add-contact-form">
+            <label>First Name:</label>
+            <input @bind="selectedContact.FirstName" />
+            <label>Last Name:</label>
+            <input @bind="selectedContact.LastName" />
+            <label>Email:</label>
+            <input @bind="selectedContact.Email" />
+            <label>Phone Number:</label>
+            <input @bind="selectedContact.PhoneNumber" />
+
+            @if (!ValidateContact(selectedContact))
+            {
+                <p class="error-message">Please fill all the information.</p>
+            }
+            <button @onclick="UpdateContact">Save Changes</button>
+            <button @onclick="CancelEdit">Cancel</button>
+        </div>
+    }
+    else
+    {
+        <h4>Add New Contact</h4>
+        <div class="add-contact-form">
+            <label>First Name:</label>
+            <input @bind="newContact.FirstName" />
+            <ValidationMessage For="@(() => newContact.FirstName)" />
+            <label>Last Name:</label>
+            <input @bind="newContact.LastName" />
+            <label>Email:</label>
+            <input @bind="newContact.Email" />
+            <label>Phone Number:</label>
+            <input @bind="newContact.PhoneNumber" />
+
+            @if (!ValidateContact(newContact))
+            {
+                <p class="error-message">Please fill all the information.</p>
+            }
+        
+            <button @onclick="AddContact">Add Contact</button>
+            <button @onclick="CancelAddContact">Cancel</button>
+        </div>
+    }
+}
+else
+{
+    <button class="add-contact-button" @onclick="ShowAddContactForm">Add New Contact</button>
+}
+
+<table>
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>First Name</th>
+            <th>Edit / Delete</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var contact in sortedContacts)
+        {
+            <tr>
+                <td>@contact.Id</td>
+                <td><a @onclick="@(() => ViewContactDetails(contact))">@contact.FirstName</a></td>
+                <td class="edit-delete-buttons">
+                    <button @onclick="@(() => EditContact(contact))">Edit</button>
+                    <button @onclick="@(() => DeleteContact(contact))">Delete</button>
+                </td>
+            </tr>
+        }
+        @if (sortedContacts.Count >= 2)
+        {
+        <th>
+            Id
+            <select @bind="sortDirection">
+                <option value="Ascending">Ascending</option>
+                <option value="Descending">Descending</option>
+            </select>
+            <button @onclick="() => SortContactsBy(nameof(Contact.Id))">Sort</button>
+        </th>
+        <th>
+            First Name
+            <select @bind="sortDirection">
+                <option value="Ascending">Ascending</option>
+                <option value="Descending">Descending</option>
+            </select>
+            <button @onclick="() => SortContactsBy(nameof(Contact.FirstName))">Sort</button>
+        </th>
+        <th>
+            Last Name
+            <select @bind="sortDirection">
+                <option value="Ascending">Ascending</option>
+                <option value="Descending">Descending</option>
+            </select>
+            <button @onclick="() => SortContactsBy(nameof(Contact.LastName))">Sort</button>
+        </th>
+        }
+    </tbody>
+</table>
+
+@if (selectedContact != null)
+{
+    <div class="contact-details">
+        <h4>Contact Details</h4>
+        <p><strong>ID:</strong> @selectedContact.Id</p>
+        <p><strong>First Name:</strong> @selectedContact.FirstName</p>
+        <p><strong>Last Name:</strong> @selectedContact.LastName</p>
+        <p><strong>Email:</strong> @selectedContact.Email</p>
+        <p><strong>Phone Number:</strong> @selectedContact.PhoneNumber</p>
+        <button class="close-button" @onclick="ClearSelectedContact">Close</button>
+    </div>
+}
+
+@code {
+    [Inject]
+    private ContactService contactService { get; set; }
+
+    private List<Contact> sortedContacts = new List<Contact>();
+    private bool showContactForm = false;
+    private Contact newContact = new Contact();
+    private Contact selectedContact;
+
+    private Contact contactToDelete;
+
+    private string sortDirection = "Ascending";
+
+
+    private void SortContactsBy(string column)
+    {
+        bool ascending = sortDirection == "Ascending";
+
+        switch (column)
+        {
+            case nameof(Contact.FirstName):
+                sortedContacts = ascending ? sortedContacts.OrderBy(c => c.FirstName).ToList() :
+                                             sortedContacts.OrderByDescending(c => c.FirstName).ToList();
+                break;
+            case nameof(Contact.LastName):
+                sortedContacts = ascending ? sortedContacts.OrderBy(c => c.LastName).ToList() :
+                                             sortedContacts.OrderByDescending(c => c.LastName).ToList();
+                break;
+            case nameof(Contact.Id):
+                sortedContacts = ascending ? sortedContacts.OrderBy(c => c.Id).ToList() :
+                                             sortedContacts.OrderByDescending(c => c.Id).ToList();
+                break;
+        }
+    }
+    private async Task DeleteContact(Contact contact)
+    {
+        contactToDelete = contact;
+
+        if (contactToDelete != null)
+        {
+            // Show confirmation dialog
+            var confirmed = await JSRuntime.InvokeAsync<bool>("confirm", "Are you sure you want to delete this contact?");
+            if (confirmed)
+            {
+                contactService.DeleteContact(contactToDelete.Id);
+                sortedContacts.Remove(contactToDelete);
+                contactToDelete = null;
+            }
+        }
+
+    }
+    private void CancelEdit()
+    {
+        // Reset selected contact and hide the contact form
+        selectedContact = null;
+        showContactForm = false;
+    }
+    private void EditContact(Contact contact)
+    {
+        // Create a new instance of Contact and copy the values from the selected contact
+        selectedContact = new Contact
+            {
+                Id = contact.Id,
+                FirstName = contact.FirstName,
+                LastName = contact.LastName,
+                Email = contact.Email,
+                PhoneNumber = contact.PhoneNumber
+            };
+        showContactForm = true; 
+    }
+
+
+
+    private void ShowAddContactForm()
+    {
+
+        selectedContact = null;
+
+        newContact = new Contact();
+        showContactForm = true;
+    }
+
+
+    private void CancelAddContact()
+    {
+        newContact = new Contact();
+        showContactForm = false;
+    }
+
+    private void AddContact()
+    {
+        if (ValidateContact(newContact))
+        {
+            contactService.AddContact(newContact);
+            sortedContacts = contactService.GetAllContacts();
+            newContact = new Contact();
+            showContactForm = false;
+        }
+    }
+    private async Task UpdateContact()
+    {
+        if (ValidateContact(selectedContact))
+        {
+
+            await contactService.UpdateContact(selectedContact);
+            sortedContacts = contactService.GetAllContacts();
+            showContactForm = false;
+
+        }
+    }
+
+
+    private bool ValidateContact(Contact contact)
+    {
+  
+        return !string.IsNullOrWhiteSpace(contact.FirstName) &&
+               !string.IsNullOrWhiteSpace(contact.LastName) &&
+               !string.IsNullOrWhiteSpace(contact.Email) &&
+               !string.IsNullOrWhiteSpace(contact.PhoneNumber);
+    }
+
+    private void ClearSelectedContact()
+    {
+        selectedContact = null; 
+    }
+    private void ViewContactDetails(Contact contact)
+    {
+        selectedContact = contact;
+    }
+
+
+}
